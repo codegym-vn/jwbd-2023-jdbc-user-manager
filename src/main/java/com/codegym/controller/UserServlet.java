@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "UserServlet", urlPatterns = "/users")
@@ -70,6 +71,7 @@ public class UserServlet extends HttpServlet {
         }
     }
 
+
     private void listUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         List<User> listUser = userDAO.selectAllUsers();
@@ -100,9 +102,28 @@ public class UserServlet extends HttpServlet {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String country = request.getParameter("country");
+
+        String add = request.getParameter("add");
+        String edit = request.getParameter("edit");
+        String delete = request.getParameter("delete");
+        String view = request.getParameter("view");
+        List<Integer> permissions = new ArrayList<>();
+        if (add != null){
+            permissions.add(1);
+        }
+        if (edit != null){
+            permissions.add(2);
+        }
+        if (delete != null){
+            permissions.add(3);
+        }
+        if (view != null){
+            permissions.add(4);
+        }
+
         User newUser = new User(name, email, country);
         //userDAO.insertUser(newUser);
-        userDAO.insertUserStore(newUser);
+        userDAO.addUserTransaction(newUser, permissions);
         RequestDispatcher dispatcher = request.getRequestDispatcher("user/create.jsp");
         dispatcher.forward(request, response);
     }
